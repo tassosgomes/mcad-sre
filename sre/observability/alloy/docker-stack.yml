@@ -12,6 +12,7 @@ services:
       GRAFANA_LOKI_ENDPOINT: ${GRAFANA_LOKI_ENDPOINT:?GRAFANA_LOKI_ENDPOINT is required}
       GRAFANA_INSTANCE_ID: ${GRAFANA_INSTANCE_ID:?GRAFANA_INSTANCE_ID is required}
       GRAFANA_LOKI_INSTANCE_ID: ${GRAFANA_LOKI_INSTANCE_ID:?GRAFANA_LOKI_INSTANCE_ID is required}
+      GRAFANA_TOKEN: ${GRAFANA_TOKEN:?GRAFANA_TOKEN is required for Loki}
     configs:
       - source: mcad_observability_alloy_config
         target: /etc/alloy/config.alloy

@@ -81,4 +81,11 @@ Alloy e monta `/var/run/docker.sock:/var/run/docker.sock:ro`.
 - `GRAFANA_LOKI_ENDPOINT`
 - `GRAFANA_INSTANCE_ID` para OTLP Gateway
 - `GRAFANA_LOKI_INSTANCE_ID` para Loki Basic Auth
-- `GRAFANA_TOKEN` para secret local/Swarm
+- `GRAFANA_TOKEN` para Loki Basic Auth via env e para criar secret local/Swarm
+
+No Swarm, o OTLP continua lendo o token pela Docker secret
+`mcad_observability_grafana_token`. O Loki usa `GRAFANA_TOKEN` via variavel de
+ambiente porque o endpoint direto de Loki exige o par Basic Auth recomendado na
+documentacao do Grafana Cloud. Isso deixa o token visivel em
+`docker service inspect`; trocar para uma secret separada de Loki e a opcao mais
+segura quando quisermos endurecer essa configuracao.
