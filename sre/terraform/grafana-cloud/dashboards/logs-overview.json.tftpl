@@ -1,0 +1,450 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "unit": "logs/sec"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "sum by (service_name) (rate({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"}[$__rate_interval]))",
+          "legendFormat": "{{service_name}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Log volume by service",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "unit": "logs/sec"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "sum by (service_name) (rate({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"} |~ \"(?i)(error|exception|fatal|panic|failed|timeout|refused)\" [$__rate_interval]))",
+          "legendFormat": "{{service_name}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Error log volume by service",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "displayMode": "gradient",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "topk(10, sum by (service_name) (count_over_time({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"}[$__range])))",
+          "legendFormat": "{{service_name}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Top services by log count",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "displayMode": "gradient",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "topk(10, sum by (container) (count_over_time({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"}[$__range])))",
+          "legendFormat": "{{container}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Top containers by log count",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 8
+      },
+      "id": 5,
+      "options": {
+        "displayMode": "gradient",
+        "maxVizHeight": 300,
+        "minVizHeight": 16,
+        "minVizWidth": 8,
+        "namePlacement": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "topk(10, sum by (service_name) (count_over_time({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"} |~ \"(?i)(error|exception|fatal|panic|failed|timeout|refused)\" [$__range])))",
+          "legendFormat": "{{service_name}}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Top services by error count",
+      "type": "bargauge"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 15
+      },
+      "id": 6,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "{deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"}",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent logs",
+      "type": "logs"
+    },
+    {
+      "datasource": {
+        "type": "loki",
+        "uid": "${loki_datasource_uid}"
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 24,
+        "x": 0,
+        "y": 26
+      },
+      "id": 7,
+      "options": {
+        "dedupStrategy": "none",
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": true,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "loki",
+            "uid": "${loki_datasource_uid}"
+          },
+          "expr": "{deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\", container=~\"$${container:regex}\"} |~ \"(?i)(error|exception|fatal|panic|failed|timeout|refused)\"",
+          "queryType": "range",
+          "refId": "A"
+        }
+      ],
+      "title": "Recent error logs",
+      "type": "logs"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "mcad",
+    "logs",
+    "loki",
+    "sre",
+    "terraform",
+    "${environment}"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki_datasource_uid}"
+        },
+        "definition": "label_values({deployment_environment=\"${environment}\"}, service_namespace)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Namespace",
+        "multi": true,
+        "name": "service_namespace",
+        "options": [],
+        "query": "label_values({deployment_environment=\"${environment}\"}, service_namespace)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki_datasource_uid}"
+        },
+        "definition": "label_values({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\"}, service_name)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Service",
+        "multi": true,
+        "name": "service_name",
+        "options": [],
+        "query": "label_values({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\"}, service_name)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki_datasource_uid}"
+        },
+        "definition": "label_values({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\"}, swarm_stack)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Stack",
+        "multi": true,
+        "name": "swarm_stack",
+        "options": [],
+        "query": "label_values({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\"}, swarm_stack)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allValue": ".*",
+        "current": {
+          "selected": true,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "loki",
+          "uid": "${loki_datasource_uid}"
+        },
+        "definition": "label_values({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\"}, container)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Container",
+        "multi": true,
+        "name": "container",
+        "options": [],
+        "query": "label_values({deployment_environment=\"${environment}\", service_namespace=~\"$${service_namespace:regex}\", service_name=~\"$${service_name:regex}\", swarm_stack=~\"$${swarm_stack:regex}\"}, container)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "MCAD Logs Overview",
+  "uid": "mcad-logs-overview-${environment}",
+  "version": 1,
+  "weekStart": ""
+}

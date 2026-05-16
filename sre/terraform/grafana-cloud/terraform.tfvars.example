@@ -6,6 +6,7 @@ grafana_auth = "glsa_xxx"
 
 # Confirme no Grafana Cloud em Connections/Data sources.
 prometheus_datasource_uid = "grafanacloud-prom"
+loki_datasource_uid       = "grafanacloud-logs"
 
 # Escolha e-mail ou webhook. Deixe ambos vazios para criar apenas folders/dashboard.
 alert_email_addresses = []

@@ -21,6 +21,12 @@ variable "prometheus_datasource_uid" {
   default     = "grafanacloud-prom"
 }
 
+variable "loki_datasource_uid" {
+  description = "UID do datasource Loki no Grafana Cloud."
+  type        = string
+  default     = "grafanacloud-logs"
+}
+
 variable "alert_email_addresses" {
   description = "Lista de e-mails para alertas. Se vazia, o contact point de e-mail nao e criado."
   type        = list(string)
