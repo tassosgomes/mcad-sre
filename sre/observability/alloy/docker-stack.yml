@@ -1,0 +1,63 @@
+services:
+  mcad-observability-alloy:
+    image: ${ALLOY_IMAGE:-grafana/alloy:v1.4.2}
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    environment:
+      GRAFANA_OTLP_ENDPOINT: ${GRAFANA_OTLP_ENDPOINT:?GRAFANA_OTLP_ENDPOINT is required}
+      GRAFANA_INSTANCE_ID: ${GRAFANA_INSTANCE_ID:?GRAFANA_INSTANCE_ID is required}
+    configs:
+      - source: mcad_observability_alloy_config
+        target: /etc/alloy/config.alloy
+    secrets:
+      - source: mcad_observability_grafana_token
+        target: grafana_token
+    volumes:
+      - mcad_observability_alloy_data:/var/lib/alloy/data
+    networks:
+      - mcad-observability-net
+    healthcheck:
+      test: ["CMD", "bash", "-c", ": </dev/tcp/127.0.0.1/12345"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        order: stop-first
+        parallelism: 1
+        delay: 5s
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+
+networks:
+  mcad-observability-net:
+    external: true
+
+volumes:
+  mcad_observability_alloy_data:
+
+configs:
+  mcad_observability_alloy_config:
+    external: true
+    name: mcad_observability_alloy_config
+
+secrets:
+  mcad_observability_grafana_token:
+    external: true
+    name: mcad_observability_grafana_token

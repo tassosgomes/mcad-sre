@@ -1,0 +1,40 @@
+name: mcad-observability
+
+services:
+  alloy:
+    image: ${ALLOY_IMAGE:-grafana/alloy:v1.4.2}
+    container_name: mcad-alloy
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    environment:
+      GRAFANA_OTLP_ENDPOINT: ${GRAFANA_OTLP_ENDPOINT:?set GRAFANA_OTLP_ENDPOINT}
+      GRAFANA_INSTANCE_ID: ${GRAFANA_INSTANCE_ID:?set GRAFANA_INSTANCE_ID}
+      GRAFANA_TOKEN: ${GRAFANA_TOKEN:?set GRAFANA_TOKEN}
+    volumes:
+      - ./alloy/config.local.alloy:/etc/alloy/config.alloy:ro
+      - alloy-data:/var/lib/alloy/data
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "12345:12345"
+    healthcheck:
+      test: ["CMD", "bash", "-c", ": </dev/tcp/127.0.0.1/12345"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - ecad-observability-net
+    restart: unless-stopped
+
+networks:
+  ecad-observability-net:
+    name: ecad-observability-net
+    external: true
+
+volumes:
+  alloy-data:
+    name: mcad-alloy-data

@@ -1,0 +1,12 @@
+environment = "prod"
+
+# Passe valores reais via TF_VAR_* ou arquivo local nao versionado.
+grafana_url  = "https://<stack>.grafana.net"
+grafana_auth = "glsa_xxx"
+
+# Confirme no Grafana Cloud em Connections/Data sources.
+prometheus_datasource_uid = "grafanacloud-prom"
+
+# Escolha e-mail ou webhook. Deixe ambos vazios para criar apenas folders/dashboard.
+alert_email_addresses = []
+alert_webhook_url     = ""
