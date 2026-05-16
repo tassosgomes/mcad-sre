@@ -67,6 +67,7 @@ dashboards mostram ausência de métricas.
 - token Grafana Cloud expirado/revogado;
 - `GRAFANA_INSTANCE_ID` ou `GRAFANA_OTLP_ENDPOINT` incorretos;
 - `GRAFANA_LOKI_ENDPOINT` incorreto;
+- `GRAFANA_LOKI_INSTANCE_ID` diferente do usuario Basic Auth da datasource Loki;
 - token sem `logs:write`;
 - serviço sem label `mcad.observability.logs=enabled`;
 - aplicação instrumentada só com Prometheus local, sem OTLP;

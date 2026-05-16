@@ -79,5 +79,6 @@ Alloy e monta `/var/run/docker.sock:/var/run/docker.sock:ro`.
 
 - `GRAFANA_OTLP_ENDPOINT`
 - `GRAFANA_LOKI_ENDPOINT`
-- `GRAFANA_INSTANCE_ID`
+- `GRAFANA_INSTANCE_ID` para OTLP Gateway
+- `GRAFANA_LOKI_INSTANCE_ID` para Loki Basic Auth
 - `GRAFANA_TOKEN` para secret local/Swarm
