@@ -16,6 +16,15 @@ dashboards mostram ausência de métricas.
    OTEL_RESOURCE_ATTRIBUTES=service.namespace=mcad,deployment.environment=prod,service.version=<versao>
    ```
 
+   Para logs de container, confirmar as labels no serviço Swarm:
+
+   ```text
+   mcad.observability.logs=enabled
+   mcad.observability.service_name=<servico>
+   mcad.observability.service_namespace=<namespace>
+   mcad.observability.environment=prod
+   ```
+
 2. Confirmar conectividade app -> Alloy na mesma rede Swarm:
 
    ```bash
@@ -36,10 +45,19 @@ dashboards mostram ausência de métricas.
    docker service logs mcad-observability_mcad-observability-alloy | grep -i "export\\|error\\|retry"
    ```
 
-5. Verificar no Grafana Explore:
+5. Verificar o caminho Docker logs -> Loki:
+
+   ```bash
+   docker service inspect <stack>_<service> --format '{{json .Spec.Labels}}'
+   docker service logs --tail 200 mcad-observability_mcad-observability-alloy
+   ```
+
+   Buscar no log do Alloy por `loki.source.docker` e `loki.write.grafana_cloud`.
+
+6. Verificar no Grafana Explore:
 
    - Metrics: filtrar por `service_name` ou `service.name`.
-   - Logs: filtrar por `service_name`, `service`, `deployment_environment`.
+   - Logs: filtrar por `{service_name="<servico>", deployment_environment="prod"}`.
    - Traces: filtrar por `service.name`.
 
 ## Causas comuns
@@ -48,6 +66,9 @@ dashboards mostram ausência de métricas.
 - endpoint OTLP usando nome errado do serviço Alloy;
 - token Grafana Cloud expirado/revogado;
 - `GRAFANA_INSTANCE_ID` ou `GRAFANA_OTLP_ENDPOINT` incorretos;
+- `GRAFANA_LOKI_ENDPOINT` incorreto;
+- token sem `logs:write`;
+- serviço sem label `mcad.observability.logs=enabled`;
 - aplicação instrumentada só com Prometheus local, sem OTLP;
 - cardinalidade/atributos diferentes do esperado no dashboard.
 

@@ -1,7 +1,8 @@
 # Grafana Alloy
 
-Coletor compartilhado para receber OTLP das aplicações MCAD/ECAD e encaminhar
-metrics, logs e traces para o Grafana Cloud.
+Coletor compartilhado para receber OTLP das aplicações MCAD/ECAD, coletar logs
+de containers Docker selecionados e encaminhar metrics, logs e traces para o
+Grafana Cloud.
 
 ## Local
 
@@ -39,6 +40,14 @@ docker config create mcad_observability_alloy_config alloy/config.swarm.alloy
 printf '%s' '<GRAFANA_TOKEN>' | docker secret create mcad_observability_grafana_token -
 ```
 
+Para atualizar a configuracao do Alloy sem reutilizar um Docker config antigo,
+crie um config versionado e aponte `MCAD_OBSERVABILITY_ALLOY_CONFIG` para ele:
+
+```bash
+docker config create mcad_observability_alloy_config_20260516_logs alloy/config.swarm.alloy
+export MCAD_OBSERVABILITY_ALLOY_CONFIG=mcad_observability_alloy_config_20260516_logs
+```
+
 Deploy:
 
 ```bash
@@ -52,8 +61,23 @@ Servicos no Swarm devem entrar em `mcad-observability-net` e usar:
 OTEL_EXPORTER_OTLP_ENDPOINT=http://mcad-observability-alloy:4318
 ```
 
+Para coletar logs de `stdout/stderr`, marque o container com labels de opt-in:
+
+```yaml
+labels:
+  mcad.observability.logs: enabled
+  mcad.observability.service_name: nome-do-servico
+  mcad.observability.service_namespace: mcad
+  mcad.observability.environment: prod
+```
+
+O Alloy precisa do Docker socket montado como leitura para descobrir containers
+e ler logs. Por isso a stack roda no manager, usa `user: root` no container do
+Alloy e monta `/var/run/docker.sock:/var/run/docker.sock:ro`.
+
 ## Valores que precisamos receber
 
 - `GRAFANA_OTLP_ENDPOINT`
+- `GRAFANA_LOKI_ENDPOINT`
 - `GRAFANA_INSTANCE_ID`
 - `GRAFANA_TOKEN` para secret local/Swarm

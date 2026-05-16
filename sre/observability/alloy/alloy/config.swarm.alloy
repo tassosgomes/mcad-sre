@@ -77,3 +77,67 @@ otelcol.auth.basic "grafana_cloud" {
 	username = sys.env("GRAFANA_INSTANCE_ID")
 	password = local.file.grafana_token.content
 }
+
+discovery.docker "linux" {
+	host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "docker_logs" {
+	targets = []
+
+	rule {
+		source_labels = ["__meta_docker_container_label_mcad_observability_logs"]
+		regex         = "enabled"
+		action        = "keep"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_mcad_observability_service_name"]
+		target_label  = "service_name"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_mcad_observability_service_namespace"]
+		target_label  = "service_namespace"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_mcad_observability_environment"]
+		target_label  = "deployment_environment"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_stack_namespace"]
+		target_label  = "swarm_stack"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_label_com_docker_swarm_service_name"]
+		target_label  = "swarm_service"
+	}
+
+	rule {
+		source_labels = ["__meta_docker_container_name"]
+		regex         = "/(.*)"
+		target_label  = "container"
+	}
+}
+
+loki.source.docker "default" {
+	host          = "unix:///var/run/docker.sock"
+	targets       = discovery.docker.linux.targets
+	labels        = {source = "docker"}
+	relabel_rules = discovery.relabel.docker_logs.rules
+	forward_to    = [loki.write.grafana_cloud.receiver]
+}
+
+loki.write "grafana_cloud" {
+	endpoint {
+		url = sys.env("GRAFANA_LOKI_ENDPOINT")
+
+		basic_auth {
+			username = sys.env("GRAFANA_INSTANCE_ID")
+			password = local.file.grafana_token.content
+		}
+	}
+}

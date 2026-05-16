@@ -1,6 +1,7 @@
 services:
   mcad-observability-alloy:
     image: ${ALLOY_IMAGE:-grafana/alloy:v1.4.2}
+    user: root
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
@@ -8,6 +9,7 @@ services:
       - /etc/alloy/config.alloy
     environment:
       GRAFANA_OTLP_ENDPOINT: ${GRAFANA_OTLP_ENDPOINT:?GRAFANA_OTLP_ENDPOINT is required}
+      GRAFANA_LOKI_ENDPOINT: ${GRAFANA_LOKI_ENDPOINT:?GRAFANA_LOKI_ENDPOINT is required}
       GRAFANA_INSTANCE_ID: ${GRAFANA_INSTANCE_ID:?GRAFANA_INSTANCE_ID is required}
     configs:
       - source: mcad_observability_alloy_config
@@ -17,6 +19,7 @@ services:
         target: grafana_token
     volumes:
       - mcad_observability_alloy_data:/var/lib/alloy/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - mcad-observability-net
     healthcheck:
@@ -48,6 +51,7 @@ services:
 networks:
   mcad-observability-net:
     external: true
+    name: ${MCAD_OBSERVABILITY_NETWORK:-mcad-observability-net}
 
 volumes:
   mcad_observability_alloy_data:
@@ -55,9 +59,9 @@ volumes:
 configs:
   mcad_observability_alloy_config:
     external: true
-    name: mcad_observability_alloy_config
+    name: ${MCAD_OBSERVABILITY_ALLOY_CONFIG:-mcad_observability_alloy_config}
 
 secrets:
   mcad_observability_grafana_token:
     external: true
-    name: mcad_observability_grafana_token
+    name: ${MCAD_OBSERVABILITY_GRAFANA_TOKEN_SECRET:-mcad_observability_grafana_token}

@@ -4,6 +4,7 @@ services:
   alloy:
     image: ${ALLOY_IMAGE:-grafana/alloy:v1.4.2}
     container_name: mcad-alloy
+    user: root
     command:
       - run
       - --server.http.listen-addr=0.0.0.0:12345
@@ -11,11 +12,13 @@ services:
       - /etc/alloy/config.alloy
     environment:
       GRAFANA_OTLP_ENDPOINT: ${GRAFANA_OTLP_ENDPOINT:?set GRAFANA_OTLP_ENDPOINT}
+      GRAFANA_LOKI_ENDPOINT: ${GRAFANA_LOKI_ENDPOINT:?set GRAFANA_LOKI_ENDPOINT}
       GRAFANA_INSTANCE_ID: ${GRAFANA_INSTANCE_ID:?set GRAFANA_INSTANCE_ID}
       GRAFANA_TOKEN: ${GRAFANA_TOKEN:?set GRAFANA_TOKEN}
     volumes:
       - ./alloy/config.local.alloy:/etc/alloy/config.alloy:ro
       - alloy-data:/var/lib/alloy/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
       - "4317:4317"
       - "4318:4318"
