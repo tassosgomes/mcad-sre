@@ -1,0 +1,448 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 0,
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "expr": "max(authz_outbox_pending_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}) or vector(0)",
+          "legendFormat": "pending",
+          "refId": "A"
+        }
+      ],
+      "title": "Outbox pending",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_decision_requests_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) or vector(0)",
+          "legendFormat": "requests/s",
+          "refId": "A"
+        }
+      ],
+      "title": "Decision request rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 2,
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_decision_denied_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) / clamp_min(sum(rate(authz_decision_requests_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])), 0.001)",
+          "legendFormat": "denied ratio",
+          "refId": "A"
+        }
+      ],
+      "title": "Decision denied ratio",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "decimals": 3,
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_outbox_failed_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) or vector(0)",
+          "legendFormat": "failures/s",
+          "refId": "A"
+        }
+      ],
+      "title": "Outbox failure rate",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_decision_allowed_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "allowed",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(authz_decision_denied_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "denied",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(authz_decision_requests_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "total",
+          "refId": "C"
+        }
+      ],
+      "title": "Decision throughput",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_decision_cache_hit_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) / clamp_min(sum(rate(authz_decision_cache_hit_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) + sum(rate(authz_decision_cache_miss_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])), 0.001)",
+          "legendFormat": "decision cache hit ratio",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(authz_cache_hit_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) / clamp_min(sum(rate(authz_cache_hit_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) + sum(rate(authz_cache_miss_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])), 0.001)",
+          "legendFormat": "context cache hit ratio",
+          "refId": "B"
+        }
+      ],
+      "title": "Cache hit ratio",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "max(authz_outbox_pending_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"})",
+          "legendFormat": "pending",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(authz_outbox_failed_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "failed/s",
+          "refId": "B"
+        }
+      ],
+      "title": "Outbox health",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_context_requests_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "authorization context",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(authz_admin_operations_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m])) by (result)",
+          "legendFormat": "admin {{result}}",
+          "refId": "B"
+        }
+      ],
+      "title": "Context and admin operations",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus_datasource_uid}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(authz_decision_cache_hit_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "decision cache hit",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(authz_decision_cache_miss_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "decision cache miss",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(authz_cache_hit_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "context cache hit",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(rate(authz_cache_miss_total{deployment_environment=\"${environment}\", service_name=\"${service_name}\"}[5m]))",
+          "legendFormat": "context cache miss",
+          "refId": "D"
+        }
+      ],
+      "title": "Cache traffic",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": [
+    "ecad-authz",
+    "mcad",
+    "sre",
+    "terraform",
+    "${environment}"
+  ],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "ECAD AuthZ",
+  "uid": "ecad-authz-${environment}",
+  "version": 1,
+  "weekStart": ""
+}

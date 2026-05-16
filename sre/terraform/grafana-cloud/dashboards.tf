@@ -7,3 +7,14 @@ resource "grafana_dashboard" "service_overview" {
     environment               = var.environment
   })
 }
+
+resource "grafana_dashboard" "authz" {
+  folder    = grafana_folder.folders["authz"].uid
+  overwrite = true
+
+  config_json = templatefile("${path.module}/dashboards/authz.json.tftpl", {
+    prometheus_datasource_uid = var.prometheus_datasource_uid
+    environment               = var.environment
+    service_name              = "ecad-authz"
+  })
+}
